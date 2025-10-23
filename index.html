@@ -2,186 +2,222 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Adoption Tracker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adoption Tracker Widget</title>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --blue:#4A7A92; --teal:#5A94B1; --muted:#879B8D; --purple:#756A85; --lilac:#8E869F;
-    --light:#C2D6E1; --sage:#A0B4A7; --soft:#D3DDD7; --pale:#C4BFD0;
+  :root {
+    --primary: #4A7A92;
+    --accent: #756A85;
+    --background: #F7F8FA;
+    --card-bg: #FFFFFF;
+    --text: #2E2E2E;
+    --muted: #879B8D;
   }
-  *{box-sizing:border-box}
-  body{
-    margin:0; font-family:'Lexend',sans-serif;
-    min-height:100vh; display:flex; align-items:center; justify-content:center;
-    background: linear-gradient(120deg, var(--light), var(--soft));
-    padding:24px;
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Lexend', sans-serif;
+    background: var(--background);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 16px;
   }
-  .wrap{
-    width:100%; max-width:980px;
-    background:rgba(255,255,255,.7); backdrop-filter:blur(10px);
-    border-radius:20px; box-shadow:0 10px 20px rgba(0,0,0,.1);
-    padding:24px;
+  .widget {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    padding: 20px;
   }
-  .header{
-    display:flex; align-items:center; justify-content:space-between; gap:12px;
-    margin-bottom:16px;
+  .header {
+    text-align: center;
+    margin-bottom: 16px;
   }
-  .title{
-    font-size:2rem; font-weight:700; color:var(--blue);
+  .header h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: var(--accent);
   }
-  .form{
-    display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+  form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
   }
-  .form input{
-    flex:1 1 360px; padding:12px 14px; border-radius:14px; border:1px solid var(--light);
-    background:#fff; outline:none; font-size:1rem;
+  input[type="url"] {
+    flex: 1;
+    border: 1px solid #E0E4E8;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 0.9rem;
+    outline: none;
   }
-  .btn{
-    padding:12px 16px; border:none; border-radius:14px; cursor:pointer;
-    transition: transform .06s ease, box-shadow .2s ease, opacity .2s ease;
-    font-weight:700; color:#fff;
-    background: linear-gradient(135deg, var(--blue), var(--purple));
-    box-shadow:0 6px 14px rgba(0,0,0,.12);
+  button {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border: none;
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 10px 14px;
+    transition: all 0.2s ease;
   }
-  .btn:hover{ box-shadow:0 10px 22px rgba(0,0,0,.16) }
-  .btn:active{ transform:scale(.98) }
-  .grid{
-    display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px;
+  button:hover { opacity: 0.9; transform: scale(1.02); }
+  #grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
-  .card{
-    display:flex; gap:12px; align-items:center;
-    background:#fff; border-radius:16px; padding:14px;
-    box-shadow:0 6px 14px rgba(0,0,0,.1);
-    transition: transform .15s ease, box-shadow .2s ease;
+  .card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--background);
+    border-radius: 12px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
   }
-  .card:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(0,0,0,.14) }
-  .img{
-    width:64px; height:64px; border-radius:12px; object-fit:cover; flex:0 0 64px;
-    background:var(--soft);
+  .info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
-  .meta{ display:flex; flex-direction:column; gap:4px; min-width:0 }
-  .name{
-    font-weight:700; color:var(--blue); font-size:1.1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  .info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    object-fit: cover;
   }
-  .name a{ color:inherit; text-decoration:none; }
-  .status{
-    margin-left:auto; padding:6px 10px; border-radius:999px; font-weight:700; font-size:.9rem;
-    display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+  .name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary);
   }
-  .dot{ width:8px; height:8px; border-radius:50% }
-  .available{ background:rgba(135,155,141,.18); color:#2f6b3b; }
-  .available .dot{ background:#2f6b3b; }
-  .matched{ background:rgba(0,0,0,.08); color:#555; }
-  .matched .dot{ background:#555; }
-  .row{
-    display:flex; align-items:center; gap:12px; width:100%;
+  .status {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-weight: 600;
   }
-  .kill{
-    margin-left:auto; background: linear-gradient(135deg, #d9534f, #8E869F);
+  .available {
+    background: #E5F6EA;
+    color: #2F6B3B;
   }
-  .subtle{ color:var(--muted); font-size:.9rem }
+  .matched {
+    background: #F0F0F0;
+    color: #555;
+  }
+  .remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .remove-btn:hover { color: #d9534f; }
+  #message {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 8px;
+  }
 </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="widget">
     <div class="header">
-      <div class="title">Adoption Tracker</div>
-      <form class="form" id="adder">
-        <input id="url" type="url" placeholder="Paste Indiana Adoption Program profile URL (e.g., https://www.indianaadoptionprogram.org/profile/jacob-9887/)" required>
-        <button class="btn" type="submit">Add Profile</button>
-      </form>
+      <h2>Adoption Tracker</h2>
     </div>
-    <div id="grid" class="grid" aria-live="polite"></div>
-    <div class="subtle" id="hint" style="margin-top:10px;"></div>
+    <form id="adder">
+      <input id="url" type="url" placeholder="Paste Indiana Adoption Program profile URL" required>
+      <button type="submit">Add</button>
+    </form>
+    <div id="grid"></div>
+    <div id="message"></div>
   </div>
 
 <script>
-  // ====== SET THIS TO YOUR APPS SCRIPT WEB APP URL ======
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxLKlX851j_hQF-kN8rgZiBNDGdG2PRxz0XIdWV3uo7bsbdSW7vjkhWHcgPu0gFqzQY/exec';
-  // ======================================================
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbxLKlX851j_hQF-kN8rgZiBNDGdG2PRxz0XIdWV3uo7bsbdSW7vjkhWHcgPu0gFqzQY/exec';
 
   const grid = document.getElementById('grid');
   const adder = document.getElementById('adder');
-  const hint = document.getElementById('hint');
+  const message = document.getElementById('message');
 
-  function statusPill(status){
-    const s = (status||'').toLowerCase();
+  function statusTag(status) {
+    const s = status?.toLowerCase() || 'unknown';
     const cls = s === 'available' ? 'available' : 'matched';
     const label = s === 'available' ? 'Available' : 'Matched';
-    return `<span class="status ${cls}"><span class="dot"></span>${label}</span>`;
+    return `<span class="status ${cls}">${label}</span>`;
   }
 
-  function cardHTML(item){
-    const safeName = item.name || 'Unknown';
-    const image = item.imageUrl || '';
-    const url = item.url || '#';
+  function cardHTML(item) {
     return `
       <div class="card">
-        <img class="img" src="${image}" alt="${safeName}">
-        <div class="row">
-          <div class="meta">
-            <div class="name"><a href="${url}" target="_blank" rel="noopener">${safeName}</a></div>
+        <div class="info">
+          <img src="${item.imageUrl}" alt="${item.name}">
+          <div>
+            <div class="name"><a href="${item.url}" target="_blank">${item.name}</a></div>
+            ${statusTag(item.status)}
           </div>
-          ${statusPill(item.status)}
-          <button class="btn kill" data-url="${url}" title="Remove">Remove</button>
         </div>
+        <button class="remove-btn" data-url="${item.url}">Remove</button>
       </div>
     `;
   }
 
-  async function fetchList(){
-    const res = await fetch(`${GAS_URL}?action=list`, { cache:'no-store' });
+  async function fetchList() {
+    const res = await fetch(`${GAS_URL}?action=list`, { cache: 'no-store' });
     const data = await res.json();
     return data.items || [];
   }
 
-  async function render(){
-    hint.textContent = 'Loading...';
-    try{
+  async function render() {
+    message.textContent = 'Loading...';
+    try {
       const items = await fetchList();
-      grid.innerHTML = items.map(cardHTML).join('') || '<div class="subtle">No profiles yet. Paste a profile URL to add one.</div>';
-      hint.textContent = '';
-    }catch(e){
-      hint.textContent = 'Could not load the list. Check your Apps Script deployment URL.';
+      grid.innerHTML = items.map(cardHTML).join('') || '<p style="text-align:center;color:var(--muted)">No profiles yet. Paste a profile URL to add one.</p>';
+      message.textContent = '';
+    } catch {
+      message.textContent = 'Could not load the list. Check your Apps Script deployment URL.';
     }
   }
 
-  adder.addEventListener('submit', async (e)=>{
+  adder.addEventListener('submit', async (e) => {
     e.preventDefault();
     const url = document.getElementById('url').value.trim();
-    if(!url) return;
-    hint.textContent = 'Adding...';
-    try{
+    if (!url) return;
+    message.textContent = 'Adding...';
+    try {
       await fetch(GAS_URL, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'add', url })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'add', url })
       });
       document.getElementById('url').value = '';
       await render();
-      hint.textContent = 'Added.';
-    }catch(err){
-      hint.textContent = 'Add failed.';
+      message.textContent = 'Added.';
+    } catch {
+      message.textContent = 'Add failed.';
     }
   });
 
-  grid.addEventListener('click', async (e)=>{
-    const btn = e.target.closest('.kill');
-    if(!btn) return;
-    const url = btn.getAttribute('data-url');
-    if(!url) return;
-    hint.textContent = 'Removing...';
-    try{
+  grid.addEventListener('click', async (e) => {
+    if (!e.target.classList.contains('remove-btn')) return;
+    const url = e.target.getAttribute('data-url');
+    message.textContent = 'Removing...';
+    try {
       await fetch(GAS_URL, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'remove', url })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'remove', url })
       });
       await render();
-      hint.textContent = 'Removed.';
-    }catch(err){
-      hint.textContent = 'Remove failed.';
+      message.textContent = 'Removed.';
+    } catch {
+      message.textContent = 'Remove failed.';
     }
   });
 
