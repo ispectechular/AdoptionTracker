@@ -45,7 +45,7 @@
   form {
     display: flex;
     gap: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
   }
   input[type="url"] {
     flex: 1;
@@ -66,6 +66,11 @@
     transition: all 0.2s ease;
   }
   button:hover { opacity: 0.9; transform: scale(1.02); }
+  #refresh-btn {
+    width: 100%;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--primary));
+  }
   #grid {
     display: flex;
     flex-direction: column;
@@ -135,14 +140,17 @@
       <input id="url" type="url" placeholder="Paste Indiana Adoption Program profile URL" required>
       <button type="submit">Add</button>
     </form>
+    <button id="refresh-btn">Refresh</button>
     <div id="grid"></div>
     <div id="message"></div>
   </div>
 
 <script>
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwvME3i3R7BfBqdweF3Cj8Kote5xfBjlU_F19oBDnm1CWMh00pnGIz9P0Ajgz5IPhqxVw/exec';
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbxHxqy3RxnCcOjeAMRLc1rdTWjesJ-xix-PoMDiNEbRwkLhBZgBLrnPVtLEkD3Zgnwl2Q/exec';
+
   const grid = document.getElementById('grid');
   const adder = document.getElementById('adder');
+  const refreshBtn = document.getElementById('refresh-btn');
   const message = document.getElementById('message');
 
   function statusTag(status) {
@@ -218,6 +226,13 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbwvME3i3R7BfBqdweF3Cj8K
     } catch {
       message.textContent = 'Remove failed.';
     }
+  });
+
+  refreshBtn.addEventListener('click', async () => {
+    message.textContent = 'Refreshing...';
+    await render();
+    message.textContent = 'Up to date!';
+    setTimeout(() => { message.textContent = ''; }, 1500);
   });
 
   render();
