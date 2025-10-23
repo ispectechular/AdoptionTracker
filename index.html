@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Adoption Profile Widget</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 20px;
+    }
+    .widget-container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      padding: 16px;
+    }
+    .profile-card {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+      background: #f9fafb;
+      transition: box-shadow 0.2s;
+    }
+    .profile-card:hover {
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+    .profile-img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #e3e8ee;
+      margin-right: 16px;
+      background: #eee;
+      object-fit: cover;
+    }
+    .profile-info {
+      flex: 1;
+    }
+    .profile-name {
+      font-size: 1.2em;
+      font-weight: 550;
+      text-decoration: none;
+      color: #1158cc;
+      margin-bottom: 4px;
+    }
+    .profile-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 14px;
+      font-size: 0.95em;
+      margin-left: 10px;
+      vertical-align: middle;
+      font-weight: 500;
+    }
+    .status-available {
+      background: #dbf9ea;
+      color: #18794e;
+      border: 1px solid #0ac86e;
+    }
+    .status-matched {
+      background: #ededed;
+      color: #777;
+      border: 1px solid #d7d7d7;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-container" id="profiles"></div>
+
+  <script>
+    const profileLinks = [
+      "https://www.indianaadoptionprogram.org/profile/jacob-9887/",
+      // Add more profiles here
+    ];
+
+    const matchedURL = "https://www.indianaadoptionprogram.org/matched-with-families/";
+
+    function extractNameFromURL(url) {
+      // Typically after "/profile/" and before last "/"
+      const parts = url.split('/');
+      const section = parts[parts.length - 2]; // jacob-9887
+      // Remove numbers, format nicely
+      const name = section.replace(/-\d+$/, '').replace(/-/g, ' ');
+      return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+
+    async function fetchProfileData(url) {
+      let available = true;
+      let profileImg = "https://www.indianaadoptionprogram.org/wp-content/uploads/2022/11/default-profile.png";
+
+      try {
+        const response = await fetch(url, { redirect: "follow" });
+        if (response.url === matchedURL) {
+          available = false;
+        } else {
+          const html = await response.text();
+          // Try to grab the profile image
+          const match = html.match(/<img[^>]*class="profile-image"[^>]*src="([^"]+)"/);
+          if (match && match[1]) profileImg = match[1];
+          else {
+            // fallback: grab first image in profile-content
+            const altMatch = html.match(/<img[^>]*src="([^"]+)"[^>]*class="[^"]*"/);
+            if (altMatch && altMatch[1]) profileImg = altMatch[1];
+          }
+        }
+      } catch (e) {
+        available = false; // If error, treat as matched/unavailable
+      }
+      return { available, profileImg };
+    }
+
+    async function displayProfiles() {
+      const container = document.getElementById('profiles');
+      container.innerHTML = "<b>Loading profiles...</b>";
+
+      const cards = [];
+      for (let url of profileLinks) {
+        const name = extractNameFromURL(url);
+        const { available, profileImg } = await fetchProfileData(url);
+
+        const statusText = available ? "Available" : "Matched";
+        const statusClass = available ? "status-available" : "status-matched";
+
+        const card = `
+          <div class="profile-card">
+            <img src="${profileImg}" alt="Profile" class="profile-img" />
+            <div class="profile-info">
+              <a href="${url}" class="profile-name" target="_blank">${name}</a>
+              <span class="profile-status ${statusClass}">${statusText}</span>
+            </div>
+          </div>
+        `;
+        cards.push(card);
+      }
+      container.innerHTML = cards.join('');
+    }
+
+    displayProfiles();
+  </script>
+</body>
+</html>
