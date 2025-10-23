@@ -68,20 +68,25 @@
     border-radius: 10px;
     object-fit: cover;
   }
-  .name {
+  .name a {
     font-size: 1rem;
     font-weight: 600;
     color: var(--primary);
+    text-decoration: none;
+  }
+  .name a:hover {
+    text-decoration: underline;
   }
   .status {
     font-size: 0.85rem;
     padding: 4px 8px;
     border-radius: 20px;
     font-weight: 600;
+    white-space: nowrap;
   }
   .available {
     background: #E5F6EA;
-    color: #2F6B3B;
+    color: #879B8D;
   }
   .matched {
     background: #F0F0F0;
@@ -142,11 +147,9 @@
       <div class="card">
         <div class="info">
           <img src="${validImage}" alt="${item.name}">
-          <div>
-            <div class="name"><a href="${item.url}" target="_blank">${item.name}</a></div>
-            ${statusTag(item.status)}
-          </div>
+          <div class="name"><a href="${item.url}" target="_blank">${item.name}</a></div>
         </div>
+        ${statusTag(item.status)}
       </div>
     `;
   }
@@ -172,3 +175,4 @@
 </script>
 </body>
 </html>
+
