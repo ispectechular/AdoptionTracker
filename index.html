@@ -35,41 +35,12 @@
   }
   .header {
     text-align: center;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
   .header h2 {
     margin: 0;
     font-size: 1.6rem;
     color: var(--accent);
-  }
-  form {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-  input[type="url"] {
-    flex: 1;
-    border: 1px solid #E0E4E8;
-    border-radius: 10px;
-    padding: 10px;
-    font-size: 0.9rem;
-    outline: none;
-  }
-  button {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    border: none;
-    color: white;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 10px 14px;
-    transition: all 0.2s ease;
-  }
-  button:hover { opacity: 0.9; transform: scale(1.02); }
-  #refresh-btn {
-    width: 100%;
-    margin-bottom: 14px;
-    background: linear-gradient(135deg, var(--accent), var(--primary));
   }
   #grid {
     display: flex;
@@ -91,8 +62,8 @@
     gap: 10px;
   }
   .info img {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     border-radius: 10px;
     object-fit: cover;
   }
@@ -115,20 +86,21 @@
     background: #F0F0F0;
     color: #555;
   }
-  .remove-btn {
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    font-size: 0.8rem;
-    cursor: pointer;
-  }
-  .remove-btn:hover { color: #d9534f; }
   #message {
     text-align: center;
     font-size: 0.85rem;
     color: var(--muted);
     margin-top: 8px;
   }
+  .sheet-link {
+    display: block;
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    margin-top: 6px;
+  }
+  .sheet-link:hover { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -136,20 +108,14 @@
     <div class="header">
       <h2>Adoption Tracker</h2>
     </div>
-    <form id="adder">
-      <input id="url" type="url" placeholder="Paste Indiana Adoption Program profile URL" required>
-      <button type="submit">Add</button>
-    </form>
-    <button id="refresh-btn">Refresh</button>
     <div id="grid"></div>
     <div id="message"></div>
+    <a href="https://docs.google.com/spreadsheets/d/1T3lZLABapmQ9nzHsRETct87EIpcMvuws_ZIT9thXA5A/edit?usp=sharing" target="_blank" class="sheet-link">Open Google Sheet ↗</a>
   </div>
 
 <script>
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbwvME3i3R7BfBqdweF3Cj8Kote5xfBjlU_F19oBDnm1CWMh00pnGIz9P0Ajgz5IPhqxVw/exec';
   const grid = document.getElementById('grid');
-  const adder = document.getElementById('adder');
-  const refreshBtn = document.getElementById('refresh-btn');
   const message = document.getElementById('message');
 
   function statusTag(status) {
@@ -160,16 +126,16 @@
   }
 
   function cardHTML(item) {
+    const validImage = item.imageUrl && item.imageUrl.startsWith('http') ? item.imageUrl : 'https://www.indianaadoptionprogram.org/wp-content/uploads/2022/11/default-profile.png';
     return `
       <div class="card">
         <div class="info">
-          <img src="${item.imageUrl}" alt="${item.name}">
+          <img src="${validImage}" alt="${item.name}">
           <div>
             <div class="name"><a href="${item.url}" target="_blank">${item.name}</a></div>
             ${statusTag(item.status)}
           </div>
         </div>
-        <button class="remove-btn" data-url="${item.url}">Remove</button>
       </div>
     `;
   }
@@ -184,58 +150,14 @@
     message.textContent = 'Loading...';
     try {
       const items = await fetchList();
-      grid.innerHTML = items.map(cardHTML).join('') || '<p style="text-align:center;color:var(--muted)">No profiles yet. Paste a profile URL to add one.</p>';
+      grid.innerHTML = items.map(cardHTML).join('') || '<p style="text-align:center;color:var(--muted)">No profiles yet.</p>';
       message.textContent = '';
     } catch {
       message.textContent = 'Could not load the list. Check your Apps Script deployment URL.';
     }
   }
 
-  adder.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const url = document.getElementById('url').value.trim();
-    if (!url) return;
-    message.textContent = 'Adding...';
-    try {
-      await fetch(GAS_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'add', url })
-      });
-      document.getElementById('url').value = '';
-      await render();
-      message.textContent = 'Added.';
-    } catch {
-      message.textContent = 'Add failed.';
-    }
-  });
-
-  grid.addEventListener('click', async (e) => {
-    if (!e.target.classList.contains('remove-btn')) return;
-    const url = e.target.getAttribute('data-url');
-    message.textContent = 'Removing...';
-    try {
-      await fetch(GAS_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'remove', url })
-      });
-      await render();
-      message.textContent = 'Removed.';
-    } catch {
-      message.textContent = 'Remove failed.';
-    }
-  });
-
-  refreshBtn.addEventListener('click', async () => {
-    message.textContent = 'Refreshing...';
-    await render();
-    message.textContent = 'Up to date!';
-    setTimeout(() => { message.textContent = ''; }, 1500);
-  });
-
   render();
 </script>
 </body>
 </html>
-
