@@ -69,71 +69,131 @@
       color: #777;
       border: 1px solid #d7d7d7;
     }
+    .add-link-container {
+      margin-bottom: 20px;
+    }
+    .add-link-input {
+      width: 80%;
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #ccd;
+      font-size: 1em;
+      margin-right: 6px;
+    }
+    .add-link-btn {
+      padding: 6px 16px;
+      background: #1177cc;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .add-link-btn:hover {
+      background: #0a5ca7;
+    }
+    .remove-btn {
+      background: #eee;
+      color: #555;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-left: 12px;
+      cursor: pointer;
+    }
+    .remove-btn:hover {
+      background: #ffdddd;
+      color: #d11;
+    }
   </style>
 </head>
 <body>
-  <div class="widget-container" id="profiles"></div>
+  <div class="widget-container">
+    <div class="add-link-container">
+      <input type="text" id="addLinkInput" class="add-link-input" placeholder="Paste new profile link..." />
+      <button class="add-link-btn" onclick="addProfileLink()">Add Link</button>
+    </div>
+    <div id="profiles"></div>
+  </div>
 
   <script>
-    const profileLinks = [
+    // Editable array of profile links. Add/remove here or in the widget below.
+    let profileLinks = [
       "https://www.indianaadoptionprogram.org/profile/jacob-9887/",
-      // Add more profiles here
+      // Add other links here!
     ];
 
     const matchedURL = "https://www.indianaadoptionprogram.org/matched-with-families/";
 
+    // Save profile links locally so you don't lose changes on refresh
+    function saveLinks() {
+      localStorage.setItem("adoptionProfileLinks", JSON.stringify(profileLinks));
+    }
+    function loadLinks() {
+      const saved = localStorage.getItem("adoptionProfileLinks");
+      if (saved) profileLinks = JSON.parse(saved);
+    }
+    loadLinks();
+
     function extractNameFromURL(url) {
-      // Typically after "/profile/" and before last "/"
+      // After "/profile/" and before last "/"
       const parts = url.split('/');
-      const section = parts[parts.length - 2]; // jacob-9887
-      // Remove numbers, format nicely
+      const section = parts[parts.length - 2];
       const name = section.replace(/-\d+$/, '').replace(/-/g, ' ');
       return name.charAt(0).toUpperCase() + name.slice(1);
     }
 
-    async function fetchProfileData(url) {
-      let available = true;
-      let profileImg = "https://www.indianaadoptionprogram.org/wp-content/uploads/2022/11/default-profile.png";
-
+    // Try to get picture from page; fallback to default if not found
+    async function getProfileImage(profileUrl) {
       try {
-        const response = await fetch(url, { redirect: "follow" });
-        if (response.url === matchedURL) {
-          available = false;
-        } else {
-          const html = await response.text();
-          // Try to grab the profile image
-          const match = html.match(/<img[^>]*class="profile-image"[^>]*src="([^"]+)"/);
-          if (match && match[1]) profileImg = match[1];
-          else {
-            // fallback: grab first image in profile-content
-            const altMatch = html.match(/<img[^>]*src="([^"]+)"[^>]*class="[^"]*"/);
-            if (altMatch && altMatch[1]) profileImg = altMatch[1];
-          }
-        }
+        const response = await fetch(profileUrl, { mode: 'cors' });
+        const html = await response.text();
+        // Try modern conventions
+        let match = html.match(/<img[^>]*class="profile-image"[^>]*src="([^"]+)"/);
+        if (match && match[1]) return match[1];
+        // Try first image on page inside profile content
+        let altMatch = html.match(/<div[^>]*class="profile-content"[^>]*>[\s\S]*?<img[^>]*src="([^"]+)"/);
+        if (altMatch && altMatch[1]) return altMatch[1];
+        // Fallback default
+        return "https://www.indianaadoptionprogram.org/wp-content/uploads/2022/11/default-profile.png";
       } catch (e) {
-        available = false; // If error, treat as matched/unavailable
+        return "https://www.indianaadoptionprogram.org/wp-content/uploads/2022/11/default-profile.png";
       }
-      return { available, profileImg };
+    }
+
+    async function checkMatched(profileUrl) {
+      // See if the profile redirects. If so, it's "Matched".
+      try {
+        const response = await fetch(profileUrl, { redirect: "follow" });
+        // If fetch API sees a redirect, response.url will reflect it
+        if (response.url === matchedURL) return true;
+      } catch (e) {}
+      return false;
     }
 
     async function displayProfiles() {
       const container = document.getElementById('profiles');
       container.innerHTML = "<b>Loading profiles...</b>";
 
-      const cards = [];
-      for (let url of profileLinks) {
+      let cards = [];
+      for (let i = 0; i < profileLinks.length; i++) {
+        const url = profileLinks[i];
         const name = extractNameFromURL(url);
-        const { available, profileImg } = await fetchProfileData(url);
+        // Status (matched or available)
+        let matched = await checkMatched(url);
+        let statusText = matched ? "Matched" : "Available";
+        let statusClass = matched ? "status-matched" : "status-available";
+        // Profile image
+        let profileImg = await getProfileImage(url);
 
-        const statusText = available ? "Available" : "Matched";
-        const statusClass = available ? "status-available" : "status-matched";
-
+        // Card HTML
         const card = `
           <div class="profile-card">
             <img src="${profileImg}" alt="Profile" class="profile-img" />
             <div class="profile-info">
               <a href="${url}" class="profile-name" target="_blank">${name}</a>
               <span class="profile-status ${statusClass}">${statusText}</span>
+              <button class="remove-btn" onclick="removeProfileLink(${i})">Remove</button>
             </div>
           </div>
         `;
@@ -142,7 +202,30 @@
       container.innerHTML = cards.join('');
     }
 
+    window.displayProfiles = displayProfiles;
+
+    function addProfileLink() {
+      const input = document.getElementById('addLinkInput');
+      const newLink = input.value.trim();
+      if (!newLink || profileLinks.includes(newLink)) {
+        input.value = "";
+        return;
+      }
+      profileLinks.push(newLink);
+      input.value = "";
+      saveLinks();
+      displayProfiles();
+    }
+
+    function removeProfileLink(index) {
+      profileLinks.splice(index, 1);
+      saveLinks();
+      displayProfiles();
+    }
+
+    // On load, display profiles
     displayProfiles();
+
   </script>
 </body>
 </html>
