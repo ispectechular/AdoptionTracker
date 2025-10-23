@@ -3,107 +3,165 @@
 <head>
   <meta charset="UTF-8">
   <title>Adoption Profile Widget</title>
+  <meta name="viewport" content="width=600, initial-scale=1.0">
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f4f6f8;
+      background: #f4f6f9;
       padding: 20px;
     }
     .widget-container {
       max-width: 600px;
-      margin: auto;
+      margin: 30px auto;
       background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      padding: 16px;
+      border-radius: 18px;
+      box-shadow: 0 6px 30px rgba(0,0,0,0.11);
+      padding: 28px 26px;
+      border: 1px solid #dde2e6;
+      transition: box-shadow 0.28s;
+    }
+    .add-link-container {
+      margin-bottom: 22px;
+      display: flex;
+      gap: 10px;
+    }
+    .add-link-input {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 7px;
+      outline: none;
+      transition: border 0.2s;
+      border: 1.5px solid #b7c7d7;
+      font-size: 1.03em;
+    }
+    .add-link-input:focus {
+      border: 1.5px solid #3a82e9;
+    }
+    .add-link-btn {
+      padding: 8px 18px;
+      background: linear-gradient(90deg,#3a82e9 60%,#215bb4);
+      color: #fff;
+      font-size: 1.06em;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 1px 7px 0 #1672d11a;
+      transition: background 0.15s, box-shadow 0.16s, transform 0.10s;
+    }
+    .add-link-btn:hover, .add-link-btn:active {
+      background: linear-gradient(90deg,#165dc3 30%,#193c7f 90%);
+      box-shadow: 0 2px 16px 0 #3079e91f;
+      transform: translateY(-2px) scale(1.03);
     }
     .profile-card {
       display: flex;
       align-items: center;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.04);
-      background: #f9fafb;
-      transition: box-shadow 0.2s;
+      justify-content: space-between;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(85,112,170,0.07);
+      background: #fafdff;
+      border: 1.1px solid #cfe2fa;
+      transition: box-shadow 0.17s, border 0.2s, background 0.18s;
+      position: relative;
+      min-height: 72px;
     }
     .profile-card:hover {
-      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 8px 26px rgba(70,120,200,0.13);
+      background: #f5faff;
+      border: 1.3px solid #a6c2f2;
+      z-index: 1;
+    }
+    .profile-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
     .profile-img {
-      width: 64px;
-      height: 64px;
+      width: 62px;
+      height: 62px;
       border-radius: 50%;
-      overflow: hidden;
-      border: 2px solid #e3e8ee;
-      margin-right: 16px;
-      background: #eee;
+      border: 2.5px solid #f0f6ff;
+      background: #ddd;
       object-fit: cover;
+      transition: box-shadow 0.17s, border 0.2s;
+      box-shadow: 0 1px 8px rgba(100,140,200,0.055);
     }
     .profile-info {
-      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
     .profile-name {
-      font-size: 1.2em;
-      font-weight: 550;
+      font-size: 1.13em;
+      font-weight: 600;
       text-decoration: none;
-      color: #1158cc;
+      color: #215bb4;
+      letter-spacing: 0.01em;
       margin-bottom: 4px;
+      transition: color 0.15s;
+    }
+    .profile-name:hover {
+      color: #163477;
+      text-decoration: underline;
+    }
+    .profile-url {
+      font-size: 0.96em;
+      color: #637798;
+      word-break: break-all;
+    }
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 9px;
     }
     .profile-status {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 14px;
-      font-size: 0.95em;
-      margin-left: 10px;
-      vertical-align: middle;
+      padding: 6px 18px;
+      border-radius: 18px;
+      font-size: 1em;
       font-weight: 500;
+      margin-left: 6px;
+      border: 1.6px solid transparent;
+      transition: border 0.18s, background 0.18s, color 0.14s;
+      min-width: 90px;
+      text-align: center;
     }
     .status-available {
-      background: #dbf9ea;
-      color: #18794e;
-      border: 1px solid #0ac86e;
+      background: #ddfbec;
+      color: #1e8d53;
+      border-color: #2fd07a;
     }
     .status-matched {
-      background: #ededed;
-      color: #777;
-      border: 1px solid #d7d7d7;
-    }
-    .add-link-container {
-      margin-bottom: 20px;
-    }
-    .add-link-input {
-      width: 80%;
-      padding: 6px;
-      border-radius: 6px;
-      border: 1px solid #ccd;
-      font-size: 1em;
-      margin-right: 6px;
-    }
-    .add-link-btn {
-      padding: 6px 16px;
-      background: #1177cc;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    .add-link-btn:hover {
-      background: #0a5ca7;
+      background: #f6f8f9;
+      color: #7e898d;
+      border-color: #dde1e4;
     }
     .remove-btn {
-      background: #eee;
-      color: #555;
-      border: none;
-      padding: 4px 8px;
-      border-radius: 6px;
-      margin-left: 12px;
+      background: #f2f3f7;
+      color: #95444a;
+      border: 1.3px solid #e0d3d4;
+      font-size: 1em;
+      font-weight: 500;
+      padding: 5px 13px;
+      border-radius: 7px;
       cursor: pointer;
+      margin-left: 7px;
+      box-shadow: 0 1px 7px 0 #48333310;
+      transition: background 0.18s, color 0.13s, border 0.14s, transform 0.10s;
     }
-    .remove-btn:hover {
-      background: #ffdddd;
-      color: #d11;
+    .remove-btn:hover, .remove-btn:active {
+      background: #fcdddd;
+      border-color: #e39da1;
+      color: #a92418;
+      transform: translateY(-1px) scale(1.06);
+    }
+    @media (max-width: 600px) {
+      .widget-container { padding: 10px; }
+      .profile-card { flex-direction: column; align-items: stretch; }
+      .card-actions { justify-content: flex-end; margin-top: 10px; }
+      .profile-status { min-width: 80px; padding: 4px 11px; font-size: .98em; }
     }
   </style>
 </head>
@@ -117,15 +175,13 @@
   </div>
 
   <script>
-    // Editable array of profile links. Add/remove here or in the widget below.
     let profileLinks = [
-      "https://www.indianaadoptionprogram.org/profile/jacob-9887/",
-      // Add other links here!
+      "https://www.indianaadoptionprogram.org/profile/jacob-9887/"
+      // Add more links!
     ];
 
     const matchedURL = "https://www.indianaadoptionprogram.org/matched-with-families/";
 
-    // Save profile links locally so you don't lose changes on refresh
     function saveLinks() {
       localStorage.setItem("adoptionProfileLinks", JSON.stringify(profileLinks));
     }
@@ -136,33 +192,27 @@
     loadLinks();
 
     function extractNameFromURL(url) {
-      // After "/profile/" and before last "/"
       const parts = url.split('/');
       const section = parts[parts.length - 2];
       const name = section.replace(/-\d+$/, '').replace(/-/g, ' ');
       return name.charAt(0).toUpperCase() + name.slice(1);
     }
-
-    // Try to get picture from page; fallback to default if not found
     async function getProfileImage(profileUrl) {
       try {
         const response = await fetch(profileUrl, { mode: 'cors' });
         const html = await response.text();
-        // Try modern conventions
-        let match = html.match(/<img[^>]*class="profile-image"[^>]*src="([^"]+)"/);
-        if (match && match[1]) return match[1];
-        // Try first image on page inside profile content
-        let altMatch = html.match(/<div[^>]*class="profile-content"[^>]*>[\s\S]*?<img[^>]*src="([^"]+)"/);
+        // Profile image inside profile-content
+        let altMatch = html.match(/<div[^>]*class="[^"]*profile-content[^"]*"[^>]*>[\s\S]*?<img[^>]*src="([^"]+)"/);
         if (altMatch && altMatch[1]) return altMatch[1];
-        // Fallback default
+        // Any first image as fallback
+        let anyMatch = html.match(/<img[^>]*src="([^"]+)"/);
+        if (anyMatch && anyMatch[1]) return anyMatch[1];
         return "https://www.indianaadoptionprogram.org/wp-content/uploads/2022/11/default-profile.png";
       } catch (e) {
         return "https://www.indianaadoptionprogram.org/wp-content/uploads/2022/11/default-profile.png";
       }
     }
-
     async function checkMatched(profileUrl) {
-      // See if the profile redirects. If so, it's "Matched".
       try {
         const response = await fetch(profileUrl, { redirect: "follow" });
         // If fetch API sees a redirect, response.url will reflect it
@@ -170,28 +220,30 @@
       } catch (e) {}
       return false;
     }
-
     async function displayProfiles() {
       const container = document.getElementById('profiles');
-      container.innerHTML = "<b>Loading profiles...</b>";
-
+      if (!profileLinks.length) {
+        container.innerHTML = '<div style="text-align:center;padding:30px 0;color:#8a9ba7;">No profiles. Add a link above.</div>';
+        return;
+      }
       let cards = [];
       for (let i = 0; i < profileLinks.length; i++) {
         const url = profileLinks[i];
         const name = extractNameFromURL(url);
-        // Status (matched or available)
         let matched = await checkMatched(url);
         let statusText = matched ? "Matched" : "Available";
         let statusClass = matched ? "status-matched" : "status-available";
-        // Profile image
         let profileImg = await getProfileImage(url);
-
-        // Card HTML
+        // Card HTML (status *at right* with remove button)
         const card = `
           <div class="profile-card">
-            <img src="${profileImg}" alt="Profile" class="profile-img" />
-            <div class="profile-info">
-              <a href="${url}" class="profile-name" target="_blank">${name}</a>
+            <div class="profile-left">
+              <img src="${profileImg}" alt="Profile" class="profile-img" />
+              <div class="profile-info">
+                <a href="${url}" class="profile-name" target="_blank">${name}</a>
+              </div>
+            </div>
+            <div class="card-actions">
               <span class="profile-status ${statusClass}">${statusText}</span>
               <button class="remove-btn" onclick="removeProfileLink(${i})">Remove</button>
             </div>
@@ -201,9 +253,7 @@
       }
       container.innerHTML = cards.join('');
     }
-
     window.displayProfiles = displayProfiles;
-
     function addProfileLink() {
       const input = document.getElementById('addLinkInput');
       const newLink = input.value.trim();
@@ -216,16 +266,13 @@
       saveLinks();
       displayProfiles();
     }
-
     function removeProfileLink(index) {
       profileLinks.splice(index, 1);
       saveLinks();
       displayProfiles();
     }
-
-    // On load, display profiles
     displayProfiles();
-
   </script>
 </body>
 </html>
+
