@@ -1,278 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Adoption Profile Widget</title>
-  <meta name="viewport" content="width=600, initial-scale=1.0">
-  <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f4f6f9;
-      padding: 20px;
-    }
-    .widget-container {
-      max-width: 600px;
-      margin: 30px auto;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 6px 30px rgba(0,0,0,0.11);
-      padding: 28px 26px;
-      border: 1px solid #dde2e6;
-      transition: box-shadow 0.28s;
-    }
-    .add-link-container {
-      margin-bottom: 22px;
-      display: flex;
-      gap: 10px;
-    }
-    .add-link-input {
-      flex: 1;
-      padding: 8px 10px;
-      border-radius: 7px;
-      outline: none;
-      transition: border 0.2s;
-      border: 1.5px solid #b7c7d7;
-      font-size: 1.03em;
-    }
-    .add-link-input:focus {
-      border: 1.5px solid #3a82e9;
-    }
-    .add-link-btn {
-      padding: 8px 18px;
-      background: linear-gradient(90deg,#3a82e9 60%,#215bb4);
-      color: #fff;
-      font-size: 1.06em;
-      font-weight: 500;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 1px 7px 0 #1672d11a;
-      transition: background 0.15s, box-shadow 0.16s, transform 0.10s;
-    }
-    .add-link-btn:hover, .add-link-btn:active {
-      background: linear-gradient(90deg,#165dc3 30%,#193c7f 90%);
-      box-shadow: 0 2px 16px 0 #3079e91f;
-      transform: translateY(-2px) scale(1.03);
-    }
-    .profile-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      margin-bottom: 16px;
-      border-radius: 14px;
-      box-shadow: 0 2px 12px rgba(85,112,170,0.07);
-      background: #fafdff;
-      border: 1.1px solid #cfe2fa;
-      transition: box-shadow 0.17s, border 0.2s, background 0.18s;
-      position: relative;
-      min-height: 72px;
-    }
-    .profile-card:hover {
-      box-shadow: 0 8px 26px rgba(70,120,200,0.13);
-      background: #f5faff;
-      border: 1.3px solid #a6c2f2;
-      z-index: 1;
-    }
-    .profile-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .profile-img {
-      width: 62px;
-      height: 62px;
-      border-radius: 50%;
-      border: 2.5px solid #f0f6ff;
-      background: #ddd;
-      object-fit: cover;
-      transition: box-shadow 0.17s, border 0.2s;
-      box-shadow: 0 1px 8px rgba(100,140,200,0.055);
-    }
-    .profile-info {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .profile-name {
-      font-size: 1.13em;
-      font-weight: 600;
-      text-decoration: none;
-      color: #215bb4;
-      letter-spacing: 0.01em;
-      margin-bottom: 4px;
-      transition: color 0.15s;
-    }
-    .profile-name:hover {
-      color: #163477;
-      text-decoration: underline;
-    }
-    .profile-url {
-      font-size: 0.96em;
-      color: #637798;
-      word-break: break-all;
-    }
-    .card-actions {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-    }
-    .profile-status {
-      padding: 6px 18px;
-      border-radius: 18px;
-      font-size: 1em;
-      font-weight: 500;
-      margin-left: 6px;
-      border: 1.6px solid transparent;
-      transition: border 0.18s, background 0.18s, color 0.14s;
-      min-width: 90px;
-      text-align: center;
-    }
-    .status-available {
-      background: #ddfbec;
-      color: #1e8d53;
-      border-color: #2fd07a;
-    }
-    .status-matched {
-      background: #f6f8f9;
-      color: #7e898d;
-      border-color: #dde1e4;
-    }
-    .remove-btn {
-      background: #f2f3f7;
-      color: #95444a;
-      border: 1.3px solid #e0d3d4;
-      font-size: 1em;
-      font-weight: 500;
-      padding: 5px 13px;
-      border-radius: 7px;
-      cursor: pointer;
-      margin-left: 7px;
-      box-shadow: 0 1px 7px 0 #48333310;
-      transition: background 0.18s, color 0.13s, border 0.14s, transform 0.10s;
-    }
-    .remove-btn:hover, .remove-btn:active {
-      background: #fcdddd;
-      border-color: #e39da1;
-      color: #a92418;
-      transform: translateY(-1px) scale(1.06);
-    }
-    @media (max-width: 600px) {
-      .widget-container { padding: 10px; }
-      .profile-card { flex-direction: column; align-items: stretch; }
-      .card-actions { justify-content: flex-end; margin-top: 10px; }
-      .profile-status { min-width: 80px; padding: 4px 11px; font-size: .98em; }
-    }
-  </style>
+<meta charset="utf-8">
+<title>Adoption Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#4A7A92; --teal:#5A94B1; --muted:#879B8D; --purple:#756A85; --lilac:#8E869F;
+    --light:#C2D6E1; --sage:#A0B4A7; --soft:#D3DDD7; --pale:#C4BFD0;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:'Lexend',sans-serif;
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(120deg, var(--light), var(--soft));
+    padding:24px;
+  }
+  .wrap{
+    width:100%; max-width:980px;
+    background:rgba(255,255,255,.7); backdrop-filter:blur(10px);
+    border-radius:20px; box-shadow:0 10px 20px rgba(0,0,0,.1);
+    padding:24px;
+  }
+  .header{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    margin-bottom:16px;
+  }
+  .title{
+    font-size:2rem; font-weight:700; color:var(--blue);
+  }
+  .form{
+    display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+  }
+  .form input{
+    flex:1 1 360px; padding:12px 14px; border-radius:14px; border:1px solid var(--light);
+    background:#fff; outline:none; font-size:1rem;
+  }
+  .btn{
+    padding:12px 16px; border:none; border-radius:14px; cursor:pointer;
+    transition: transform .06s ease, box-shadow .2s ease, opacity .2s ease;
+    font-weight:700; color:#fff;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    box-shadow:0 6px 14px rgba(0,0,0,.12);
+  }
+  .btn:hover{ box-shadow:0 10px 22px rgba(0,0,0,.16) }
+  .btn:active{ transform:scale(.98) }
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px;
+  }
+  .card{
+    display:flex; gap:12px; align-items:center;
+    background:#fff; border-radius:16px; padding:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.1);
+    transition: transform .15s ease, box-shadow .2s ease;
+  }
+  .card:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(0,0,0,.14) }
+  .img{
+    width:64px; height:64px; border-radius:12px; object-fit:cover; flex:0 0 64px;
+    background:var(--soft);
+  }
+  .meta{ display:flex; flex-direction:column; gap:4px; min-width:0 }
+  .name{
+    font-weight:700; color:var(--blue); font-size:1.1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .name a{ color:inherit; text-decoration:none; }
+  .status{
+    margin-left:auto; padding:6px 10px; border-radius:999px; font-weight:700; font-size:.9rem;
+    display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+  }
+  .dot{ width:8px; height:8px; border-radius:50% }
+  .available{ background:rgba(135,155,141,.18); color:#2f6b3b; }
+  .available .dot{ background:#2f6b3b; }
+  .matched{ background:rgba(0,0,0,.08); color:#555; }
+  .matched .dot{ background:#555; }
+  .row{
+    display:flex; align-items:center; gap:12px; width:100%;
+  }
+  .kill{
+    margin-left:auto; background: linear-gradient(135deg, #d9534f, #8E869F);
+  }
+  .subtle{ color:var(--muted); font-size:.9rem }
+</style>
 </head>
 <body>
-  <div class="widget-container">
-    <div class="add-link-container">
-      <input type="text" id="addLinkInput" class="add-link-input" placeholder="Paste new profile link..." />
-      <button class="add-link-btn" onclick="addProfileLink()">Add Link</button>
+  <div class="wrap">
+    <div class="header">
+      <div class="title">Adoption Tracker</div>
+      <form class="form" id="adder">
+        <input id="url" type="url" placeholder="Paste Indiana Adoption Program profile URL (e.g., https://www.indianaadoptionprogram.org/profile/jacob-9887/)" required>
+        <button class="btn" type="submit">Add Profile</button>
+      </form>
     </div>
-    <div id="profiles"></div>
+    <div id="grid" class="grid" aria-live="polite"></div>
+    <div class="subtle" id="hint" style="margin-top:10px;"></div>
   </div>
 
-  <script>
-    let profileLinks = [
-      "https://www.indianaadoptionprogram.org/profile/jacob-9887/"
-      // Add more links!
-    ];
+<script>
+  // ====== SET THIS TO YOUR APPS SCRIPT WEB APP URL ======
+  const GAS_URL = 'PASTE_YOUR_WEB_APP_URL_HERE'; // e.g., https://script.google.com/macros/s/AKfyc.../exec
+  // ======================================================
 
-    const matchedURL = "https://www.indianaadoptionprogram.org/matched-with-families/";
+  const grid = document.getElementById('grid');
+  const adder = document.getElementById('adder');
+  const hint = document.getElementById('hint');
 
-    function saveLinks() {
-      localStorage.setItem("adoptionProfileLinks", JSON.stringify(profileLinks));
-    }
-    function loadLinks() {
-      const saved = localStorage.getItem("adoptionProfileLinks");
-      if (saved) profileLinks = JSON.parse(saved);
-    }
-    loadLinks();
+  function statusPill(status){
+    const s = (status||'').toLowerCase();
+    const cls = s === 'available' ? 'available' : 'matched';
+    const label = s === 'available' ? 'Available' : 'Matched';
+    return `<span class="status ${cls}"><span class="dot"></span>${label}</span>`;
+  }
 
-    function extractNameFromURL(url) {
-      const parts = url.split('/');
-      const section = parts[parts.length - 2];
-      const name = section.replace(/-\d+$/, '').replace(/-/g, ' ');
-      return name.charAt(0).toUpperCase() + name.slice(1);
-    }
-    async function getProfileImage(profileUrl) {
-      try {
-        const response = await fetch(profileUrl, { mode: 'cors' });
-        const html = await response.text();
-        // Profile image inside profile-content
-        let altMatch = html.match(/<div[^>]*class="[^"]*profile-content[^"]*"[^>]*>[\s\S]*?<img[^>]*src="([^"]+)"/);
-        if (altMatch && altMatch[1]) return altMatch[1];
-        // Any first image as fallback
-        let anyMatch = html.match(/<img[^>]*src="([^"]+)"/);
-        if (anyMatch && anyMatch[1]) return anyMatch[1];
-        return "https://www.indianaadoptionprogram.org/wp-content/uploads/2022/11/default-profile.png";
-      } catch (e) {
-        return "https://www.indianaadoptionprogram.org/wp-content/uploads/2022/11/default-profile.png";
-      }
-    }
-    async function checkMatched(profileUrl) {
-      try {
-        const response = await fetch(profileUrl, { redirect: "follow" });
-        // If fetch API sees a redirect, response.url will reflect it
-        if (response.url === matchedURL) return true;
-      } catch (e) {}
-      return false;
-    }
-    async function displayProfiles() {
-      const container = document.getElementById('profiles');
-      if (!profileLinks.length) {
-        container.innerHTML = '<div style="text-align:center;padding:30px 0;color:#8a9ba7;">No profiles. Add a link above.</div>';
-        return;
-      }
-      let cards = [];
-      for (let i = 0; i < profileLinks.length; i++) {
-        const url = profileLinks[i];
-        const name = extractNameFromURL(url);
-        let matched = await checkMatched(url);
-        let statusText = matched ? "Matched" : "Available";
-        let statusClass = matched ? "status-matched" : "status-available";
-        let profileImg = await getProfileImage(url);
-        // Card HTML (status *at right* with remove button)
-        const card = `
-          <div class="profile-card">
-            <div class="profile-left">
-              <img src="${profileImg}" alt="Profile" class="profile-img" />
-              <div class="profile-info">
-                <a href="${url}" class="profile-name" target="_blank">${name}</a>
-              </div>
-            </div>
-            <div class="card-actions">
-              <span class="profile-status ${statusClass}">${statusText}</span>
-              <button class="remove-btn" onclick="removeProfileLink(${i})">Remove</button>
-            </div>
+  function cardHTML(item){
+    const safeName = item.name || 'Unknown';
+    const image = item.imageUrl || '';
+    const url = item.url || '#';
+    return `
+      <div class="card">
+        <img class="img" src="${image}" alt="${safeName}">
+        <div class="row">
+          <div class="meta">
+            <div class="name"><a href="${url}" target="_blank" rel="noopener">${safeName}</a></div>
           </div>
-        `;
-        cards.push(card);
-      }
-      container.innerHTML = cards.join('');
+          ${statusPill(item.status)}
+          <button class="btn kill" data-url="${url}" title="Remove">Remove</button>
+        </div>
+      </div>
+    `;
+  }
+
+  async function fetchList(){
+    const res = await fetch(`${GAS_URL}?action=list`, { cache:'no-store' });
+    const data = await res.json();
+    return data.items || [];
+  }
+
+  async function render(){
+    hint.textContent = 'Loading...';
+    try{
+      const items = await fetchList();
+      grid.innerHTML = items.map(cardHTML).join('') || '<div class="subtle">No profiles yet. Paste a profile URL to add one.</div>';
+      hint.textContent = '';
+    }catch(e){
+      hint.textContent = 'Could not load the list. Check your Apps Script deployment URL.';
     }
-    window.displayProfiles = displayProfiles;
-    function addProfileLink() {
-      const input = document.getElementById('addLinkInput');
-      const newLink = input.value.trim();
-      if (!newLink || profileLinks.includes(newLink)) {
-        input.value = "";
-        return;
-      }
-      profileLinks.push(newLink);
-      input.value = "";
-      saveLinks();
-      displayProfiles();
+  }
+
+  adder.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const url = document.getElementById('url').value.trim();
+    if(!url) return;
+    hint.textContent = 'Adding...';
+    try{
+      await fetch(GAS_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'add', url })
+      });
+      document.getElementById('url').value = '';
+      await render();
+      hint.textContent = 'Added.';
+    }catch(err){
+      hint.textContent = 'Add failed.';
     }
-    function removeProfileLink(index) {
-      profileLinks.splice(index, 1);
-      saveLinks();
-      displayProfiles();
+  });
+
+  grid.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.kill');
+    if(!btn) return;
+    const url = btn.getAttribute('data-url');
+    if(!url) return;
+    hint.textContent = 'Removing...';
+    try{
+      await fetch(GAS_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'remove', url })
+      });
+      await render();
+      hint.textContent = 'Removed.';
+    }catch(err){
+      hint.textContent = 'Remove failed.';
     }
-    displayProfiles();
-  </script>
+  });
+
+  render();
+</script>
 </body>
 </html>
-
